@@ -1183,7 +1183,7 @@ function renderPlModal(){
   st.playlists.forEach(pl=>{
     const has=pl.videoIds.includes(plModalVid);
     const row=document.createElement('div');row.className='pl-check-row';
-    row.innerHTML=`<div class="pl-check ${has?'on'}">${has?'✓':''}</div><div class="pl-name">${pl.name}</div>`;
+    row.innerHTML=`<div class="pl-check ${has?'on':''}">${has?'✓':''}</div><div class="pl-name">${pl.name}</div>`;
     row.addEventListener('click',()=>{const j=pl.videoIds.indexOf(plModalVid);if(j===-1)pl.videoIds.push(plModalVid);else pl.videoIds.splice(j,1);persist();renderPlModal();});
     list.appendChild(row);
   });
