@@ -5,8 +5,8 @@
   "start_url": "./index.html",
   "display": "fullscreen",
   "orientation": "any",
-  "theme_color": "#0a0a14",
-  "background_color": "#0a0a14",
+  "theme_color": "#030d06",
+  "background_color": "#030d06",
   "categories": ["entertainment", "kids"],
   "icons": [
     {
