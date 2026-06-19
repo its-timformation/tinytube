@@ -149,7 +149,7 @@ html,body{width:100%;height:100%;overflow:hidden;
 
 /* ── Filter bar (tvOS top-nav pills) ────────────────────── */
 #filter-bar{
-  flex:1;display:flex;overflow-x:auto;
+  flex:1;min-width:0;display:flex;overflow-x:auto;
   padding:0;border:none;margin:0;gap:3px;
   justify-content:center;
   scrollbar-width:none;-ms-overflow-style:none;
@@ -1131,9 +1131,12 @@ function makeRow(area,title,items,delay=0){
   const row=document.createElement('div');
   row.className='c-row row-anim';row.style.animationDelay=`${delay}ms`;
   // Split emoji from text for separate sizing
-  const iconMatch=title.match(/^([\p{Emoji_Presentation}\p{Extended_Pictographic}])\s*/u);
-  const rowIcon=iconMatch?`<span class="row-title-icon">${iconMatch[1]}</span>`:'';
-  const rowText=iconMatch?title.slice(iconMatch[0].length):title;
+  // Split leading emoji from title text (spread handles surrogate pairs)
+  const chars=[...title];
+  const fc=chars[0]||'';
+  const isEmoji=fc.codePointAt(0)>255;
+  const rowIcon=isEmoji?`<span class="row-title-icon">${fc}</span>`:'';
+  const rowText=isEmoji?chars.slice(1).join('').replace(/^\s+/,''):title;
   row.innerHTML=`<div class="row-hdr"><div class="row-title">${rowIcon}<span>${rowText}</span></div></div><div class="row-scroll"></div>`;
   const scroll=row.querySelector('.row-scroll');
   items.forEach(({v,i,cached})=>scroll.appendChild(makeCard(v,i,cached)));
