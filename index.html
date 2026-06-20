@@ -1012,7 +1012,9 @@ select option{background:var(--s2)}
           <label class="f-lbl">Custom thumbnail <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional — auto-filled)</span></label>
           <input type="url" id="add-thumb" placeholder="https://…">
         </div>
+        <div id="edit-mode-banner" style="display:none;background:var(--acc2);border:1.5px solid rgba(52,217,120,.3);border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:.8rem;color:var(--acc);font-weight:800">✏️ Editing video — make changes and hit Save</div>
         <button class="btn-acc" id="add-btn">Add to tinytube</button>
+        <button class="btn-ghost" id="edit-cancel-btn" style="display:none;margin-top:8px">Cancel</button>
         <div class="msg-ok" id="add-ok"></div>
         <div class="msg-err" id="add-err"></div>
       </div>
@@ -1802,16 +1804,19 @@ async function renderAdminList(){
       <div class="vli-acts">
         <button class="btn-sm fav${v.favourite?' on':''}" data-fav="${i}">${v.favourite?'❤':'♡'}</button>
         ${can?`<button class="btn-sm sav${ok?' on':''}" data-cache="${i}">${ok?'📥':'💾'}</button>`:''}
+        <button class="btn-sm" data-edit="${i}">✏️</button>
         <button class="btn-sm del" data-del="${i}">🗑</button>
       </div>`;
     list.appendChild(el);
   }
   list.querySelectorAll('[data-fav]').forEach(b=>b.addEventListener('click',()=>{const i=+b.dataset.fav;st.videos[i].favourite=!st.videos[i].favourite;persist();renderAdminList();}));
+  list.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>openEditMode(+b.dataset.edit)));
   list.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>{
     const i=+b.dataset.del,id=st.videos[i].id;
     if(cacheable(st.videos[i].url))uncache(st.videos[i].url);
     st.videos.splice(i,1);
     st.playlists.forEach(p=>{const j=p.videoIds.indexOf(id);if(j>-1)p.videoIds.splice(j,1);});
+    if(editIdx===i)clearEditMode();
     persist();renderAdminList();renderOrganize();
   }));
   list.querySelectorAll('[data-cache]').forEach(b=>b.addEventListener('click',async()=>{
@@ -1830,6 +1835,42 @@ async function renderAdminList(){
     el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('drag-over');if(!src||src===el)return;const[v]=st.videos.splice(+src.dataset.i,1);st.videos.splice(+el.dataset.i,0,v);persist();renderAdminList();});
   });
 }
+
+/* Edit video */
+let editIdx=null;
+function openEditMode(i){
+  const v=st.videos[i];
+  editIdx=i;
+  // Switch to Add tab
+  document.querySelectorAll('.a-tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.a-panel').forEach(x=>x.classList.remove('active'));
+  const addTab=document.querySelector('.a-tab[data-tab="add"]');
+  if(addTab)addTab.classList.add('active');
+  document.getElementById('tab-add').classList.add('active');
+  // Pre-fill fields
+  document.getElementById('add-url').value=v.url||'';
+  document.getElementById('add-title').value=v.title||'';
+  document.getElementById('add-cat').value=v.category||'other';
+  document.getElementById('add-series').value=v.seriesName||'';
+  document.getElementById('add-ep').value=v.seriesOrder||'';
+  document.getElementById('add-desc').value=v.description||'';
+  document.getElementById('add-thumb').value=v.thumb||'';
+  document.getElementById('add-btn').textContent='Save changes';
+  document.getElementById('edit-mode-banner').style.display='block';
+  document.getElementById('edit-cancel-btn').style.display='block';
+  document.getElementById('add-ok').textContent='';
+  document.getElementById('add-err').textContent='';
+  initSeriesTa();
+}
+function clearEditMode(){
+  editIdx=null;
+  document.getElementById('add-btn').textContent='Add to tinytube';
+  document.getElementById('edit-mode-banner').style.display='none';
+  document.getElementById('edit-cancel-btn').style.display='none';
+  ['add-title','add-url','add-thumb','add-series','add-ep','add-desc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('add-cat').value='shows';
+}
+document.getElementById('edit-cancel-btn').addEventListener('click',clearEditMode);
 
 /* Add video */
 let fetchD=null;
@@ -1863,10 +1904,18 @@ document.getElementById('add-btn').addEventListener('click',async()=>{
   if(!ft){const vm=vmId(url);if(vm){okEl.textContent='⏳ Fetching thumbnail…';ft=(await fetchMeta(url)).thumb;okEl.textContent='';}}
   // Auto-create series object if not yet in st.series
   if(series&&!findSeries(series)){const sid=slugify(series)||uid();st.series[sid]={id:sid,name:series,cover:ft||'',hero:'',description:''};}
-  st.videos.push({id:uid(),title,url,thumb:ft,category:cat,favourite:false,seriesName:series,seriesOrder:ep,description:desc});
-  persist();okEl.textContent='✅ Added!';
-  ['add-title','add-url','add-thumb','add-series','add-ep','add-desc'].forEach(id=>document.getElementById(id).value='');
-  renderAdminList();renderSeriesAdmin();
+  if(editIdx!==null){
+    // Update existing video (preserve id and favourite)
+    const old=st.videos[editIdx];
+    st.videos[editIdx]={...old,title,url,thumb:ft||old.thumb,category:cat,seriesName:series,seriesOrder:ep,description:desc};
+    persist();okEl.textContent='✅ Saved!';clearEditMode();
+    renderAdminList();renderSeriesAdmin();renderKid();
+  }else{
+    st.videos.push({id:uid(),title,url,thumb:ft,category:cat,favourite:false,seriesName:series,seriesOrder:ep,description:desc});
+    persist();okEl.textContent='✅ Added!';
+    ['add-title','add-url','add-thumb','add-series','add-ep','add-desc'].forEach(id=>document.getElementById(id).value='');
+    renderAdminList();renderSeriesAdmin();
+  }
   setTimeout(()=>{okEl.textContent='';},2500);
 });
 
@@ -2019,11 +2068,11 @@ document.getElementById('sm-del-btn').addEventListener('click',()=>{
 document.getElementById('new-series-btn').addEventListener('click',()=>openSeriesModal(null));
 
 /* Settings */
-document.getElementById('set-autoplay').addEventListener('change',e=>st.autoplay=e.target.checked);
-document.getElementById('set-delay').addEventListener('change',e=>st.delay=+e.target.value);
-document.getElementById('set-inv').addEventListener('change',e=>{st.inv=e.target.checked;syncInvUI();});
-document.getElementById('inv-host').addEventListener('change',e=>{if(e.target.value==='custom')document.getElementById('inv-custom-row').style.display='flex';else{st.invBase=e.target.value;document.getElementById('inv-custom-row').style.display='none';}});
-document.getElementById('inv-custom').addEventListener('input',e=>{if(e.target.value)st.invBase=e.target.value;});
+document.getElementById('set-autoplay').addEventListener('change',e=>{st.autoplay=e.target.checked;persist();});
+document.getElementById('set-delay').addEventListener('change',e=>{st.delay=+e.target.value;persist();});
+document.getElementById('set-inv').addEventListener('change',e=>{st.inv=e.target.checked;syncInvUI();persist();});
+document.getElementById('inv-host').addEventListener('change',e=>{if(e.target.value==='custom'){document.getElementById('inv-custom-row').style.display='flex';}else{st.invBase=e.target.value;document.getElementById('inv-custom-row').style.display='none';persist();}});
+document.getElementById('inv-custom').addEventListener('input',e=>{if(e.target.value){st.invBase=e.target.value;persist();}});
 function syncInvUI(){document.getElementById('inv-row').style.display=st.inv?'flex':'none';}
 
 document.getElementById('pin-chg-btn').addEventListener('click',()=>{
