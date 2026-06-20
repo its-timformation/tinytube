@@ -686,6 +686,150 @@ select option{background:var(--s2)}
   .card-play-ring{opacity:0 !important}
   .card-actions{opacity:0 !important;pointer-events:none !important}
 }
+
+/* ═══════════════════════════════════════════
+   SERIES VIEW SCREEN
+═══════════════════════════════════════════ */
+#series-view{background:var(--bg);overflow-y:auto;display:flex;flex-direction:column;}
+#sv-hero{
+  position:relative;width:100%;height:clamp(170px,32vw,300px);
+  background:var(--s2);flex-shrink:0;overflow:hidden;
+}
+#sv-hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;}
+#sv-hero-fade{
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom, rgba(3,13,6,0) 35%, var(--bg) 100%);
+}
+#sv-hero-placeholder{
+  position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;font-size:4rem;opacity:.25;
+}
+#sv-content{
+  flex:1;padding:0 clamp(18px,4vw,48px) 60px;
+  max-width:860px;margin:0 auto;width:100%;box-sizing:border-box;
+}
+#sv-back{
+  display:inline-flex;align-items:center;gap:6px;
+  background:none;border:none;color:var(--t2);
+  font-family:inherit;font-size:.85rem;font-weight:800;
+  cursor:pointer;padding:16px 0 10px;
+}
+#sv-back:hover{color:var(--t1)}
+#sv-title{font-size:clamp(1.6rem,5vw,2.5rem);font-weight:900;margin:0 0 6px;line-height:1.15;}
+#sv-meta{font-size:.8rem;color:var(--t3);margin-bottom:8px;font-weight:800;}
+#sv-desc{font-size:.9rem;color:var(--t2);line-height:1.6;margin:0 0 24px;max-width:540px;}
+.sv-ep-hdr{font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.8px;color:var(--t3);margin-bottom:12px;}
+.sv-ep-list{display:flex;flex-direction:column;gap:7px;}
+.sv-ep{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(28,28,30,.6);border:1px solid var(--glass-bdr);
+  border-radius:14px;padding:10px 14px;cursor:pointer;
+  transition:background .15s,border-color .15s;
+}
+.sv-ep:hover{background:rgba(52,217,120,.07);border-color:rgba(52,217,120,.28);}
+.sv-ep-num{
+  width:30px;height:30px;border-radius:50%;
+  background:var(--s3);border:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.72rem;font-weight:900;color:var(--t3);flex-shrink:0;
+}
+.sv-ep-art{
+  width:80px;height:50px;border-radius:8px;overflow:hidden;
+  background:var(--s3);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;
+}
+.sv-ep-art img{width:100%;height:100%;object-fit:cover;}
+.sv-ep-info{flex:1;min-width:0;}
+.sv-ep-title{font-size:.88rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sv-ep-sub{font-size:.72rem;color:var(--t3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sv-ep-play{
+  width:32px;height:32px;border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.06);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:background .15s,border-color .15s;
+}
+.sv-ep-play svg{width:14px;height:14px;fill:white;margin-left:2px;}
+.sv-ep:hover .sv-ep-play{background:var(--acc);border-color:var(--acc);}
+.sv-ep:hover .sv-ep-play svg{fill:#030d06;}
+
+/* ── Series typeahead ────────────────────────────────────── */
+.series-ta-wrap{position:relative;}
+.series-ta-dd{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:100;
+  background:rgba(8,26,12,.98);border:1.5px solid var(--acc);
+  border-radius:12px;overflow:hidden;
+  box-shadow:0 8px 32px rgba(0,0,0,.6);
+  display:none;
+}
+.series-ta-dd.open{display:block;}
+.series-ta-item{
+  padding:10px 14px;cursor:pointer;font-size:.88rem;
+  display:flex;align-items:center;gap:10px;
+  color:var(--t1);transition:background .1s;
+}
+.series-ta-item:hover{background:rgba(52,217,120,.12);}
+.series-ta-cover{
+  width:40px;height:26px;border-radius:5px;flex-shrink:0;
+  background:var(--s3);object-fit:cover;display:flex;
+  align-items:center;justify-content:center;font-size:.8rem;overflow:hidden;
+}
+.series-ta-cover img{width:100%;height:100%;object-fit:cover;}
+.series-ta-new{
+  border-top:1px solid var(--bdr);
+  color:var(--acc);font-weight:800;font-size:.85rem;
+}
+
+/* ── Series admin panel ──────────────────────────────────── */
+.series-admin-card{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(28,28,30,.6);border:1px solid var(--glass-bdr);
+  border-radius:12px;padding:10px 12px;margin-bottom:8px;
+}
+.series-admin-cover{
+  width:60px;height:38px;border-radius:6px;
+  background:var(--s3);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;overflow:hidden;
+}
+.series-admin-cover img{width:100%;height:100%;object-fit:cover;}
+.series-admin-info{flex:1;min-width:0;}
+.series-admin-name{font-size:.88rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.series-admin-sub{font-size:.7rem;color:var(--t3);margin-top:2px;}
+
+/* ── Series edit modal ───────────────────────────────────── */
+#series-modal{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.75);
+  align-items:center;justify-content:center;
+  backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+}
+#series-modal.open{display:flex;}
+.sm-box{
+  background:var(--s1);border:1px solid var(--glass-bdr);
+  border-radius:20px;padding:24px;
+  width:min(430px,94vw);max-height:90vh;overflow-y:auto;
+  box-shadow:0 24px 80px rgba(0,0,0,.75);
+}
+.sm-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.sm-hdr h3{font-size:1rem;font-weight:900;margin:0;}
+.sm-close{background:none;border:none;color:var(--t2);font-size:1.3rem;cursor:pointer;padding:0;}
+.sm-img-preview{
+  width:100%;height:100px;border-radius:10px;margin-top:8px;
+  background:var(--s3);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.sm-hero-preview{
+  width:100%;height:70px;border-radius:10px;margin-top:8px;
+  background:var(--s3);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.sm-img-preview img,.sm-hero-preview img{width:100%;height:100%;object-fit:cover;}
+.sm-note{font-size:.75rem;color:var(--t3);margin-top:5px;}
+
+/* series badge tappable */
+.card-series-link{cursor:pointer;text-decoration:none;color:inherit;}
+.card-series-link:hover{color:var(--acc);}
 </style>
 </head>
 <body>
@@ -814,6 +958,7 @@ select option{background:var(--s2)}
   <div class="admin-tabs">
     <button class="a-tab active" data-tab="videos">📹 Videos</button>
     <button class="a-tab" data-tab="add">➕ Add</button>
+    <button class="a-tab" data-tab="series-admin">🎬 Series</button>
     <button class="a-tab" data-tab="organize">📋 Organize</button>
     <button class="a-tab" data-tab="settings">⚙ Settings</button>
   </div>
@@ -849,16 +994,32 @@ select option{background:var(--s2)}
             <option value="other">📁 Other</option>
           </select>
           <label class="f-lbl">Series <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
-          <input type="text" id="add-series" placeholder="e.g. Little Bear" list="series-dl">
-          <datalist id="series-dl"></datalist>
+          <div class="series-ta-wrap">
+            <input type="text" id="add-series" placeholder="Type to find or create a series…" autocomplete="off">
+            <div class="series-ta-dd" id="series-ta-dd"></div>
+          </div>
           <label class="f-lbl">Episode number <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
           <input type="text" id="add-ep" placeholder="1" style="max-width:90px">
+          <label class="f-lbl">Description <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+          <input type="text" id="add-desc" placeholder="Brief description for kids…" maxlength="200">
           <label class="f-lbl">Custom thumbnail <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional — auto-filled)</span></label>
           <input type="url" id="add-thumb" placeholder="https://…">
         </div>
         <button class="btn-acc" id="add-btn">Add to tinytube</button>
         <div class="msg-ok" id="add-ok"></div>
         <div class="msg-err" id="add-err"></div>
+      </div>
+    </div>
+
+    <!-- SERIES ADMIN -->
+    <div class="a-panel" id="tab-series-admin">
+      <div class="admin-max">
+        <div class="a-card">
+          <div class="a-card-title">Your series</div>
+          <div id="series-list-admin2"></div>
+          <button class="btn-ghost" id="new-series-btn" style="margin-top:12px">＋ Create new series</button>
+        </div>
+        <p style="font-size:.78rem;color:var(--t3);margin-top:6px">Series are created automatically when you assign a series name to a video, or create them here to add a cover image and hero banner.</p>
       </div>
     </div>
 
@@ -872,11 +1033,6 @@ select option{background:var(--s2)}
             <input type="text" id="new-pl-name" placeholder="New playlist name…" style="flex:1">
             <button class="btn-acc" style="width:auto;padding:0 18px;margin-top:0" id="new-pl-btn">Create</button>
           </div>
-        </div>
-        <div class="a-card">
-          <div class="a-card-title">Series</div>
-          <div id="series-list-admin"></div>
-          <p style="font-size:.78rem;color:var(--t3);margin-top:8px">Series appear automatically when you assign a series name to a video.</p>
         </div>
       </div>
     </div>
@@ -961,6 +1117,46 @@ select option{background:var(--s2)}
   </div>
 </div>
 
+<!-- ════════ SERIES VIEW ════════ -->
+<div id="series-view" class="screen">
+  <div id="sv-hero">
+    <img id="sv-hero-img" src="" alt="">
+    <div id="sv-hero-fade"></div>
+    <div id="sv-hero-placeholder">🎬</div>
+  </div>
+  <div id="sv-content">
+    <button id="sv-back">← Back</button>
+    <h1 id="sv-title"></h1>
+    <div id="sv-meta"></div>
+    <p id="sv-desc"></p>
+    <div class="sv-ep-hdr">Episodes</div>
+    <div class="sv-ep-list" id="sv-ep-list"></div>
+  </div>
+</div>
+
+<!-- ════════ SERIES MODAL ════════ -->
+<div id="series-modal">
+  <div class="sm-box">
+    <div class="sm-hdr">
+      <h3 id="sm-modal-title">Edit series</h3>
+      <button class="sm-close" id="sm-close-btn">✕</button>
+    </div>
+    <label class="f-lbl" style="margin-top:0">Series name</label>
+    <input type="text" id="sm-name" placeholder="e.g. Bluey">
+    <label class="f-lbl">Description <span style="font-weight:400;text-transform:none;letter-spacing:0">(shown in series view)</span></label>
+    <input type="text" id="sm-desc" placeholder="What is this series about?">
+    <label class="f-lbl">Cover image URL <span style="font-weight:400;text-transform:none;letter-spacing:0">(square / portrait thumbnail)</span></label>
+    <input type="url" id="sm-cover" placeholder="https://…">
+    <div class="sm-img-preview" id="sm-cover-preview"><span style="font-size:.78rem;color:var(--t3)">No image</span></div>
+    <label class="f-lbl">Hero image URL <span style="font-weight:400;text-transform:none;letter-spacing:0">(wide banner for series view)</span></label>
+    <input type="url" id="sm-hero" placeholder="https://…">
+    <div class="sm-hero-preview" id="sm-hero-preview"><span style="font-size:.78rem;color:var(--t3)">No image</span></div>
+    <p class="sm-note">Tip: use a wide YouTube thumbnail URL or any image link</p>
+    <button class="btn-acc" id="sm-save-btn" style="margin-top:20px">Save series</button>
+    <button class="btn-sm del" id="sm-del-btn" style="width:100%;padding:10px;margin-top:8px;font-size:.82rem;text-align:center;display:none">Delete series</button>
+  </div>
+</div>
+
 <!-- ════════ PLAYLIST MODAL ════════ -->
 <div id="playlist-modal">
   <div class="pl-modal-card">
@@ -992,6 +1188,9 @@ const LS={
   s(k,v){localStorage.setItem(k,JSON.stringify(v));}
 };
 function uid(){return Math.random().toString(36).slice(2,9);}
+function slugify(n){return n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
+function findSeries(name){return Object.values(st.series||{}).find(s=>s.name===name)||null;}
+
 function migrate(arr){
   return arr.map(v=>{
     if(!v.id)v.id=uid();
@@ -1002,14 +1201,16 @@ function migrate(arr){
     if(v.favourite===undefined)v.favourite=false;
     if(!v.seriesName)v.seriesName='';
     if(!v.seriesOrder)v.seriesOrder=0;
+    if(!v.description)v.description='';
     return v;
   });
 }
-const VERSION = '2.4';
+const VERSION = '2.5';
 
 let st={
   videos:    migrate(LS.g('tt_videos',[])),
   playlists: LS.g('tt_playlists',[]),
+  series:    LS.g('tt_series',{}),
   pin:       LS.g('tt_pin','1502'),
   autoplay:  LS.g('tt_autoplay',false),
   delay:     LS.g('tt_delay',5),
@@ -1018,10 +1219,17 @@ let st={
   syncToken: LS.g('tt_sync_token',''),
   syncGist:  LS.g('tt_sync_gist',''),
 };
+// Auto-populate st.series from existing video seriesNames (migration)
+st.videos.forEach(v=>{
+  if(v.seriesName){
+    const id=slugify(v.seriesName)||uid();
+    if(!st.series[id]){st.series[id]={id,name:v.seriesName,cover:'',hero:'',description:''};}
+  }
+});
 
 let syncPushTimer=null;
 function persist(){
-  LS.s('tt_videos',st.videos);LS.s('tt_playlists',st.playlists);
+  LS.s('tt_videos',st.videos);LS.s('tt_playlists',st.playlists);LS.s('tt_series',st.series);
   LS.s('tt_pin',st.pin);LS.s('tt_autoplay',st.autoplay);
   LS.s('tt_delay',st.delay);LS.s('tt_inv',st.inv);LS.s('tt_invBase',st.invBase);
   LS.s('tt_sync_token',st.syncToken);LS.s('tt_sync_gist',st.syncGist);
@@ -1033,7 +1241,7 @@ function persist(){
 /* ══════════════════════════════════════════════
    SCREENS
 ══════════════════════════════════════════════ */
-const SCREENS={kid:'kid-view',player:'player-view',pin:'pin-view',admin:'admin-view'};
+const SCREENS={kid:'kid-view',player:'player-view',pin:'pin-view',admin:'admin-view',series:'series-view'};
 function go(n){Object.values(SCREENS).forEach(id=>document.getElementById(id).classList.remove('active'));document.getElementById(SCREENS[n]).classList.add('active');}
 
 /* ══════════════════════════════════════════════
@@ -1163,8 +1371,9 @@ function updateHero(entry){
   ey.textContent=v.seriesName||cat.l;
   ti.textContent=v.title;
   let badges=`<span class="h-badge ${cat.cls}">${cat.ic} ${cat.l}</span>`;
-  if(v.seriesName)badges+=`<span class="h-badge hb-series">🎬 ${v.seriesName}</span>`;
+  if(v.seriesName)badges+=`<span class="h-badge hb-series" style="cursor:pointer" data-series-hero="${v.seriesName.replace(/"/g,'&quot;')}">🎬 ${v.seriesName}</span>`;
   me.innerHTML=badges;
+  me.querySelectorAll('[data-series-hero]').forEach(el=>el.addEventListener('click',()=>openSeriesView(el.dataset.seriesHero)));
   pl.style.display='inline-flex';fb.style.display='inline-flex';
   fb.classList.toggle('is-fav',v.favourite);
   fi.style.fill=v.favourite?'#ff607a':'currentColor';
@@ -1204,7 +1413,7 @@ function makeCard(v,idx,cached){
     </div>
     <div class="card-label">
       <div class="card-title">${v.title}</div>
-      ${v.seriesName?`<div class="card-sub">🎬 ${v.seriesName}${v.seriesOrder?' · Ep '+v.seriesOrder:''}</div>`:''}
+      ${v.seriesName?`<div class="card-sub"><span class="card-series-link" data-series="${v.seriesName.replace(/"/g,'&quot;')}">🎬 ${v.seriesName}${v.seriesOrder?' · Ep '+v.seriesOrder:''}</span></div>`:''}
       <div class="card-actions">
         <button class="card-action-btn fav-toggle ${v.favourite?'is-fav':''}">${v.favourite?'❤ Saved':'♡ Save'}</button>
         <button class="card-action-btn pl-add">+ Playlist</button>
@@ -1213,6 +1422,8 @@ function makeCard(v,idx,cached){
   card.addEventListener('click',()=>playVideo(idx));
   card.querySelector('.fav-toggle').addEventListener('click',e=>{e.stopPropagation();st.videos[idx].favourite=!st.videos[idx].favourite;persist();renderKid();});
   card.querySelector('.pl-add').addEventListener('click',e=>{e.stopPropagation();openPlaylistModal(v.id);});
+  const sl=card.querySelector('.card-series-link');
+  if(sl)sl.addEventListener('click',e=>{e.stopPropagation();openSeriesView(sl.dataset.series);});
   return card;
 }
 
@@ -1220,6 +1431,46 @@ function makeCard(v,idx,cached){
    PLAYLIST MODAL
 ══════════════════════════════════════════════ */
 let plModalVid=null;
+/* ══════════════════════════════════════════════
+   SERIES VIEW
+══════════════════════════════════════════════ */
+function openSeriesView(seriesName){
+  const s=findSeries(seriesName);
+  const episodes=st.videos.map((v,i)=>({v,i})).filter(e=>e.v.seriesName===seriesName)
+    .sort((a,b)=>(+a.v.seriesOrder||999)-(+b.v.seriesOrder||999));
+
+  // Hero image
+  const heroImg=document.getElementById('sv-hero-img');
+  const heroPh=document.getElementById('sv-hero-placeholder');
+  const heroSrc=(s&&s.hero)||(episodes.length?getThumb(episodes[0].v):'');
+  if(heroSrc){heroImg.src=heroSrc;heroImg.style.display='block';heroPh.style.display='none';}
+  else{heroImg.style.display='none';heroPh.style.display='flex';}
+
+  document.getElementById('sv-title').textContent=seriesName;
+  document.getElementById('sv-meta').textContent=episodes.length+' episode'+(episodes.length!==1?'s':'');
+  document.getElementById('sv-desc').textContent=(s&&s.description)||'';
+
+  const epList=document.getElementById('sv-ep-list');epList.innerHTML='';
+  episodes.forEach(({v,i})=>{
+    const thumb=getThumb(v);
+    const ep=document.createElement('div');ep.className='sv-ep';
+    ep.innerHTML=`
+      <div class="sv-ep-num">${v.seriesOrder||'?'}</div>
+      <div class="sv-ep-art">${thumb?`<img src="${thumb}" alt="" onerror="this.style.display='none'">`:'🎬'}</div>
+      <div class="sv-ep-info">
+        <div class="sv-ep-title">${v.title}</div>
+        <div class="sv-ep-sub">${v.description||('Episode '+(v.seriesOrder||''))}</div>
+      </div>
+      <div class="sv-ep-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>`;
+    ep.addEventListener('click',()=>playVideo(i));
+    epList.appendChild(ep);
+  });
+
+  document.getElementById('series-view').scrollTop=0;
+  go('series');
+}
+document.getElementById('sv-back').addEventListener('click',()=>go('kid'));
+
 function openPlaylistModal(vid){plModalVid=vid;renderPlModal();document.getElementById('playlist-modal').classList.add('open');}
 function renderPlModal(){
   const list=document.getElementById('pl-modal-list');list.innerHTML='';
@@ -1464,7 +1715,7 @@ function openAdmin(){
   document.getElementById('sync-gist').value=st.syncGist;
   document.getElementById('version-display').textContent='v'+VERSION;
   syncStatus('',null);
-  syncInvUI();updateSeriesDL();renderAdminList();renderOrganize();go('admin');
+  syncInvUI();renderAdminList();renderOrganize();renderSeriesAdmin();initSeriesTa();go('admin');
 }
 document.getElementById('admin-close').addEventListener('click',()=>{persist();renderKid();go('kid');});
 document.querySelectorAll('.a-tab').forEach(t=>{
@@ -1472,6 +1723,8 @@ document.querySelectorAll('.a-tab').forEach(t=>{
     document.querySelectorAll('.a-tab').forEach(x=>x.classList.remove('active'));
     document.querySelectorAll('.a-panel').forEach(x=>x.classList.remove('active'));
     t.classList.add('active');document.getElementById('tab-'+t.dataset.tab).classList.add('active');
+    if(t.dataset.tab==='add')initSeriesTa();
+    if(t.dataset.tab==='series-admin')renderSeriesAdmin();
   });
 });
 
@@ -1546,6 +1799,7 @@ document.getElementById('add-btn').addEventListener('click',async()=>{
   const thumb=document.getElementById('add-thumb').value.trim();
   const series=document.getElementById('add-series').value.trim();
   const ep=parseInt(document.getElementById('add-ep').value)||0;
+  const desc=document.getElementById('add-desc').value.trim();
   const okEl=document.getElementById('add-ok'),errEl=document.getElementById('add-err');
   okEl.textContent='';errEl.textContent='';
   if(!title){errEl.textContent='Please enter a title.';return;}
@@ -1553,18 +1807,73 @@ document.getElementById('add-btn').addEventListener('click',async()=>{
   try{new URL(url);}catch{errEl.textContent="Doesn't look like a valid URL.";return;}
   let ft=thumb;
   if(!ft){const vm=vmId(url);if(vm){okEl.textContent='⏳ Fetching thumbnail…';ft=(await fetchMeta(url)).thumb;okEl.textContent='';}}
-  st.videos.push({id:uid(),title,url,thumb:ft,category:cat,favourite:false,seriesName:series,seriesOrder:ep});
+  // Auto-create series object if not yet in st.series
+  if(series&&!findSeries(series)){const sid=slugify(series)||uid();st.series[sid]={id:sid,name:series,cover:ft||'',hero:'',description:''};}
+  st.videos.push({id:uid(),title,url,thumb:ft,category:cat,favourite:false,seriesName:series,seriesOrder:ep,description:desc});
   persist();okEl.textContent='✅ Added!';
-  ['add-title','add-url','add-thumb','add-series','add-ep'].forEach(id=>document.getElementById(id).value='');
-  renderAdminList();updateSeriesDL();
+  ['add-title','add-url','add-thumb','add-series','add-ep','add-desc'].forEach(id=>document.getElementById(id).value='');
+  renderAdminList();renderSeriesAdmin();
   setTimeout(()=>{okEl.textContent='';},2500);
 });
 
-function updateSeriesDL(){
-  const dl=document.getElementById('series-dl');
-  const names=[...new Set(st.videos.map(v=>v.seriesName).filter(Boolean))];
-  dl.innerHTML=names.map(n=>`<option value="${n}">`).join('');
+function updateSeriesDL(){/* replaced by typeahead */}
+
+function initSeriesTa(){
+  const inp=document.getElementById('add-series');
+  const dd=document.getElementById('series-ta-dd');
+  if(!inp||!dd)return;
+  inp.removeEventListener('focus',inp._taFocus);
+  inp.removeEventListener('input',inp._taInput);
+  inp._taFocus=()=>showSeriesDd(inp.value.trim());
+  inp._taInput=()=>showSeriesDd(inp.value.trim());
+  inp.addEventListener('focus',inp._taFocus);
+  inp.addEventListener('input',inp._taInput);
 }
+
+function showSeriesDd(q){
+  const dd=document.getElementById('series-ta-dd');if(!dd)return;
+  const all=Object.values(st.series).sort((a,b)=>a.name.localeCompare(b.name));
+  const filtered=q?all.filter(s=>s.name.toLowerCase().includes(q.toLowerCase())):all;
+  const exactMatch=filtered.some(s=>s.name.toLowerCase()===q.toLowerCase());
+  let html='';
+  filtered.forEach(s=>{
+    const imgHtml=s.cover
+      ?`<div class="series-ta-cover"><img src="${s.cover}" onerror="this.parentElement.textContent='🎬'"></div>`
+      :`<div class="series-ta-cover">🎬</div>`;
+    html+=`<div class="series-ta-item" data-name="${s.name.replace(/"/g,'&quot;')}">${imgHtml}<span>${s.name}</span></div>`;
+  });
+  if(q&&!exactMatch){
+    html+=`<div class="series-ta-item series-ta-new" data-new="${q.replace(/"/g,'&quot;')}">＋ Create "${q}"</div>`;
+  }
+  if(!html){dd.classList.remove('open');return;}
+  dd.innerHTML=html;dd.classList.add('open');
+  dd.querySelectorAll('[data-name]').forEach(el=>{
+    el.addEventListener('mousedown',e=>{
+      e.preventDefault();
+      document.getElementById('add-series').value=el.dataset.name;
+      dd.classList.remove('open');
+    });
+  });
+  const newEl=dd.querySelector('[data-new]');
+  if(newEl){
+    newEl.addEventListener('mousedown',e=>{
+      e.preventDefault();
+      const name=newEl.dataset.new;
+      const id=slugify(name)||uid();
+      if(!st.series[id])st.series[id]={id,name,cover:'',hero:'',description:''};
+      persist();renderSeriesAdmin();
+      document.getElementById('add-series').value=name;
+      dd.classList.remove('open');
+    });
+  }
+}
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.series-ta-wrap')){
+    const dd=document.getElementById('series-ta-dd');
+    if(dd)dd.classList.remove('open');
+  }
+});
 
 /* Organize */
 function renderOrganize(){
@@ -1578,20 +1887,82 @@ function renderOrganize(){
     });
     plList.querySelectorAll('[data-dpl]').forEach(b=>b.addEventListener('click',()=>{st.playlists.splice(+b.dataset.dpl,1);persist();renderOrganize();}));
   }
-  const serEl=document.getElementById('series-list-admin');serEl.innerHTML='';
-  const sm={};st.videos.forEach(v=>{if(v.seriesName){if(!sm[v.seriesName])sm[v.seriesName]=0;sm[v.seriesName]++;}});
-  if(!Object.keys(sm).length){serEl.innerHTML='<p style="color:var(--t3);font-size:.82rem;padding:4px 0">No series yet</p>';return;}
-  Object.entries(sm).forEach(([name,count])=>{
-    const el=document.createElement('div');el.className='org-item';
-    el.innerHTML=`<div class="org-icon">🎬</div><div class="org-info"><div class="org-name">${name}</div><div class="org-sub">${count} episode${count!==1?'s':''}</div></div>`;
-    serEl.appendChild(el);
-  });
+  renderSeriesAdmin();
 }
 document.getElementById('new-pl-btn').addEventListener('click',()=>{
   const n=document.getElementById('new-pl-name').value.trim();if(!n)return;
   st.playlists.push({id:uid(),name:n,videoIds:[]});persist();renderOrganize();
   document.getElementById('new-pl-name').value='';
 });
+
+/* ══════════════════════════════════════════════
+   SERIES ADMIN
+══════════════════════════════════════════════ */
+function renderSeriesAdmin(){
+  const el=document.getElementById('series-list-admin2');if(!el)return;
+  el.innerHTML='';
+  const all=Object.values(st.series).sort((a,b)=>a.name.localeCompare(b.name));
+  if(!all.length){
+    el.innerHTML='<p style="color:var(--t3);font-size:.82rem;padding:4px 0 8px">No series yet. Add one below or assign a series name when adding a video.</p>';
+    return;
+  }
+  all.forEach(s=>{
+    const epCount=st.videos.filter(v=>v.seriesName===s.name).length;
+    const div=document.createElement('div');div.className='series-admin-card';
+    const imgHtml=s.cover
+      ?`<div class="series-admin-cover"><img src="${s.cover}" onerror="this.style.display='none'" style="width:100%;height:100%;object-fit:cover"></div>`
+      :`<div class="series-admin-cover">🎬</div>`;
+    div.innerHTML=`${imgHtml}<div class="series-admin-info"><div class="series-admin-name">${s.name}</div><div class="series-admin-sub">${epCount} episode${epCount!==1?'s':''}</div></div><div class="org-acts"><button class="btn-sm" data-edit="${s.id}">Edit</button></div>`;
+    div.querySelector('[data-edit]').addEventListener('click',()=>openSeriesModal(s.id));
+    el.appendChild(div);
+  });
+}
+
+let smEditId=null;
+function openSeriesModal(id){
+  smEditId=id||null;
+  const s=id?st.series[id]:null;
+  document.getElementById('sm-modal-title').textContent=id?'Edit series':'New series';
+  document.getElementById('sm-name').value=s?s.name:'';
+  document.getElementById('sm-desc').value=s?s.description:'';
+  document.getElementById('sm-cover').value=s?s.cover:'';
+  document.getElementById('sm-hero').value=s?s.hero:'';
+  updateSmPreview('sm-cover','sm-cover-preview');
+  updateSmPreview('sm-hero','sm-hero-preview');
+  document.getElementById('sm-del-btn').style.display=id?'block':'none';
+  document.getElementById('series-modal').classList.add('open');
+}
+function updateSmPreview(inputId,previewId){
+  const url=document.getElementById(inputId).value.trim();
+  const prev=document.getElementById(previewId);
+  if(url){prev.innerHTML=`<img src="${url}" onerror="this.parentElement.innerHTML='<span style=\\'font-size:.78rem;color:var(--t3)\\'>Image not found</span>'">`;}
+  else{prev.innerHTML='<span style="font-size:.78rem;color:var(--t3)">No image</span>';}
+}
+document.getElementById('sm-close-btn').addEventListener('click',()=>document.getElementById('series-modal').classList.remove('open'));
+document.getElementById('series-modal').addEventListener('click',e=>{if(e.target===document.getElementById('series-modal'))document.getElementById('series-modal').classList.remove('open');});
+document.getElementById('sm-cover').addEventListener('input',()=>updateSmPreview('sm-cover','sm-cover-preview'));
+document.getElementById('sm-hero').addEventListener('input',()=>updateSmPreview('sm-hero','sm-hero-preview'));
+document.getElementById('sm-save-btn').addEventListener('click',()=>{
+  const name=document.getElementById('sm-name').value.trim();if(!name)return;
+  const cover=document.getElementById('sm-cover').value.trim();
+  const hero=document.getElementById('sm-hero').value.trim();
+  const desc=document.getElementById('sm-desc').value.trim();
+  const id=smEditId||(slugify(name)||uid());
+  const oldName=smEditId&&st.series[smEditId]?st.series[smEditId].name:null;
+  st.series[id]={id,name,cover,hero,description:desc};
+  if(smEditId&&smEditId!==id){delete st.series[smEditId];}
+  // Rename videos if series name changed
+  if(oldName&&oldName!==name)st.videos.forEach(v=>{if(v.seriesName===oldName)v.seriesName=name;});
+  persist();renderSeriesAdmin();renderAdminList();renderKid();
+  document.getElementById('series-modal').classList.remove('open');
+});
+document.getElementById('sm-del-btn').addEventListener('click',()=>{
+  if(!smEditId||!confirm('Remove this series? Videos keep their series name but cover/hero/description will be gone.'))return;
+  delete st.series[smEditId];
+  persist();renderSeriesAdmin();
+  document.getElementById('series-modal').classList.remove('open');
+});
+document.getElementById('new-series-btn').addEventListener('click',()=>openSeriesModal(null));
 
 /* Settings */
 document.getElementById('set-autoplay').addEventListener('change',e=>st.autoplay=e.target.checked);
@@ -1657,7 +2028,7 @@ async function gistApi(method,path,body,token){
 
 async function syncPush(){
   const token=st.syncToken; if(!token)return;
-  const data={videos:st.videos,playlists:st.playlists};
+  const data={videos:st.videos,playlists:st.playlists,series:st.series};
   try{
     if(st.syncGist){
       await gistApi('PATCH','/gists/'+st.syncGist,{files:{[GIST_FILE]:{content:JSON.stringify(data)}}},token);
@@ -1691,8 +2062,9 @@ async function syncPull(){
       st.videos=merged;
     }
     if(Array.isArray(data.playlists)) st.playlists=data.playlists;
-    LS.s('tt_videos',st.videos);LS.s('tt_playlists',st.playlists);
-    renderKid();renderAdminList();renderOrganize();
+    if(data.series&&typeof data.series==='object') st.series=data.series;
+    LS.s('tt_videos',st.videos);LS.s('tt_playlists',st.playlists);LS.s('tt_series',st.series);
+    renderKid();renderAdminList();renderOrganize();renderSeriesAdmin();
     syncStatus('✓ Pulled '+new Date().toLocaleTimeString(),true);
   }catch(e){syncStatus('Pull failed: '+e.message,false);}
 }
