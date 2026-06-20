@@ -1,9 +1,9 @@
-// tinytube — Service Worker v2.1
+// tinytube — Service Worker v2.6
 // Two separate caches:
 //   SHELL  = app files (bumped each release to force update)
 //   VIDEOS = user's saved offline videos (NEVER deleted on update)
 
-const SHELL  = 'tinytube-shell-v2';
+const SHELL  = 'tinytube-shell-v26';
 const VIDEOS = 'tinytube-v1'; // keep stable so saved videos survive updates
 
 // Only cache local app files — external scripts load fine from CDN
