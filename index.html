@@ -230,6 +230,13 @@ html,body{width:100%;height:100%;overflow:hidden;
 .video-card:hover .card-play-ring-inner{transform:scale(1.08);background:rgba(52,217,120,.32);box-shadow:0 0 36px rgba(52,217,120,.55)}
 .card-play-ring-inner svg{width:22px;height:22px;fill:white;margin-left:3px}
 
+/* progress bar */
+.card-progress{
+  position:absolute;bottom:0;left:0;right:0;height:4px;
+  background:rgba(255,255,255,.15);z-index:4;pointer-events:none;
+}
+.card-progress-fill{height:100%;background:var(--acc);border-radius:0 2px 2px 0;}
+
 /* top badges */
 .card-badges{
   position:absolute;top:8px;left:8px;right:8px;z-index:3;
@@ -373,47 +380,37 @@ html,body{width:100%;height:100%;overflow:hidden;
 }
 #ctrl-back:active{transform:scale(.9)}
 
-/* ── Pause overlay (Netflix style) ─────────────────────── */
+/* ── Pause overlay (Netflix TV style) ──────────────────── */
 #pause-overlay{
   position:absolute;inset:0;z-index:20;
-  background:radial-gradient(ellipse at center, rgba(0,0,0,.15) 0%, rgba(0,0,0,.75) 100%);
-  display:none;flex-direction:column;align-items:center;justify-content:center;
-  pointer-events:none;
+  background:linear-gradient(to top, rgba(0,0,0,.88) 0%, rgba(0,0,0,.45) 28%, rgba(0,0,0,0) 60%);
+  display:none;flex-direction:column;align-items:flex-start;justify-content:flex-end;
+  pointer-events:none;cursor:pointer;
+  padding-bottom:90px; /* clear the player controls */
 }
 #pause-overlay.visible{display:flex;pointer-events:auto}
-.pause-center{display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center;padding:28px}
-@keyframes pausePulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(52,217,120,.45), 0 0 36px rgba(52,217,120,.3)}
-  50%{box-shadow:0 0 0 18px rgba(52,217,120,.08), 0 0 56px rgba(52,217,120,.5)}
+.pause-info{padding:0 clamp(24px,4vw,48px) 24px;max-width:min(560px,75%);}
+.pause-watching{
+  font-size:.68rem;font-weight:900;text-transform:uppercase;letter-spacing:1.4px;
+  color:rgba(255,255,255,.48);margin-bottom:10px;
 }
-.pause-big-play{
-  width:92px;height:92px;border-radius:50%;
-  background:var(--acc);
-  display:flex;align-items:center;justify-content:center;cursor:pointer;
-  box-shadow:0 0 0 0 rgba(52,217,120,.45), 0 0 36px rgba(52,217,120,.3);
-  animation:pausePulse 2.6s ease-in-out infinite;
-  transition:transform .15s,box-shadow .15s;
-}
-.pause-big-play:hover{
-  transform:scale(1.08);
-  box-shadow:0 0 0 14px rgba(52,217,120,.18), 0 0 56px rgba(52,217,120,.55);
-  animation:none;
-}
-.pause-big-play:active{transform:scale(.95);animation:none}
-.pause-big-play svg{width:38px;height:38px;fill:#030d06;margin-left:5px}
 #pause-title{
-  font-size:clamp(1.1rem,4.5vw,1.9rem);
-  font-weight:900;
-  text-shadow:0 2px 20px rgba(0,0,0,.85);
-  max-width:640px;
-  line-height:1.25;
+  font-size:clamp(1.3rem,4.5vw,2.2rem);font-weight:900;
+  text-shadow:0 2px 18px rgba(0,0,0,.85);line-height:1.15;margin:0 0 6px;
 }
 #pause-sub{
-  font-size:clamp(.78rem,2.4vw,.95rem);
-  color:rgba(255,255,255,.65);
-  font-weight:700;
-  text-shadow:0 1px 8px rgba(0,0,0,.8);
-  letter-spacing:.01em;
+  font-size:clamp(.78rem,2.2vw,.92rem);color:rgba(255,255,255,.65);
+  font-weight:700;margin:0 0 8px;text-shadow:0 1px 6px rgba(0,0,0,.7);
+}
+#pause-desc{
+  font-size:clamp(.72rem,1.8vw,.84rem);
+  color:rgba(255,255,255,.45);line-height:1.5;margin:0;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.pause-status{
+  position:absolute;bottom:100px;right:clamp(18px,3vw,36px);
+  font-size:.72rem;font-weight:900;letter-spacing:.5px;
+  color:rgba(255,255,255,.42);pointer-events:none;
 }
 
 /* ── Auto-next ──────────────────────────────────────────── */
@@ -827,6 +824,16 @@ select option{background:var(--s2)}
 .sm-img-preview img,.sm-hero-preview img{width:100%;height:100%;object-fit:cover;}
 .sm-note{font-size:.75rem;color:var(--t3);margin-top:5px;}
 
+/* QR modal (shares .sm-box with series modal) */
+#qr-modal{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.75);
+  align-items:center;justify-content:center;
+  backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+}
+#qr-modal.open{display:flex;}
+#qr-canvas canvas{border-radius:12px;}
+
 /* series badge tappable */
 .card-series-link{cursor:pointer;text-decoration:none;color:inherit;}
 .card-series-link:hover{color:var(--acc);}
@@ -894,13 +901,13 @@ select option{background:var(--s2)}
     </div>
     <div id="click-overlay"></div>
     <div id="pause-overlay">
-      <div class="pause-center">
-        <div class="pause-big-play" id="pause-play-btn">
-          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        </div>
+      <div class="pause-info">
+        <div class="pause-watching">You're watching</div>
         <div id="pause-title"></div>
         <div id="pause-sub"></div>
+        <div id="pause-desc"></div>
       </div>
+      <div class="pause-status">⏸ Paused — tap to resume</div>
     </div>
     <div id="ap-overlay">
       <div id="ap-thumb-box"></div>
@@ -1091,9 +1098,10 @@ select option{background:var(--s2)}
           <p class="f-hint">Create at <a href="https://github.com/settings/tokens" target="_blank" style="color:var(--acc)">github.com/settings/tokens</a> → New token → tick <strong>gist</strong></p>
           <label class="f-lbl">Gist ID <span style="font-weight:400;text-transform:none;letter-spacing:0">(leave blank to create new)</span></label>
           <input type="text" id="sync-gist" placeholder="Auto-created on first sync">
-          <div style="display:flex;gap:8px;margin-top:14px">
-            <button class="btn-acc" style="margin-top:0" id="sync-btn">☁ Sync now</button>
+          <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+            <button class="btn-acc" style="margin-top:0;flex:1" id="sync-btn">☁ Sync now</button>
             <button class="btn-ghost" style="margin-top:0;flex:0 0 auto;padding:0 16px" id="sync-pull-btn">↓ Pull</button>
+            <button class="btn-ghost" style="margin-top:0;flex:0 0 auto;padding:0 14px" id="sync-qr-btn" title="Show QR code for second device">📱 QR</button>
           </div>
           <div id="sync-status" style="font-size:.8rem;font-weight:800;margin-top:10px;min-height:18px"></div>
         </div>
@@ -1157,6 +1165,19 @@ select option{background:var(--s2)}
   </div>
 </div>
 
+<!-- ════════ QR MODAL ════════ -->
+<div id="qr-modal">
+  <div class="sm-box" style="text-align:center">
+    <div class="sm-hdr">
+      <h3>Scan on second device</h3>
+      <button class="sm-close" id="qr-close-btn">✕</button>
+    </div>
+    <p style="font-size:.82rem;color:var(--t2);line-height:1.5;margin-bottom:18px">Scan this QR code on your other device to open tinytube with the Gist ID pre-filled. You'll still need to enter your GitHub token on that device.</p>
+    <div id="qr-canvas" style="display:flex;justify-content:center;padding:12px 0"></div>
+    <p id="qr-url-text" style="font-size:.68rem;color:var(--t3);word-break:break-all;margin-top:12px;line-height:1.4"></p>
+  </div>
+</div>
+
 <!-- ════════ PLAYLIST MODAL ════════ -->
 <div id="playlist-modal">
   <div class="pl-modal-card">
@@ -1205,12 +1226,13 @@ function migrate(arr){
     return v;
   });
 }
-const VERSION = '2.5';
+const VERSION = '2.6';
 
 let st={
   videos:    migrate(LS.g('tt_videos',[])),
   playlists: LS.g('tt_playlists',[]),
   series:    LS.g('tt_series',{}),
+  progress:  LS.g('tt_progress',{}),
   pin:       LS.g('tt_pin','1502'),
   autoplay:  LS.g('tt_autoplay',false),
   delay:     LS.g('tt_delay',5),
@@ -1229,7 +1251,7 @@ st.videos.forEach(v=>{
 
 let syncPushTimer=null;
 function persist(){
-  LS.s('tt_videos',st.videos);LS.s('tt_playlists',st.playlists);LS.s('tt_series',st.series);
+  LS.s('tt_videos',st.videos);LS.s('tt_playlists',st.playlists);LS.s('tt_series',st.series);LS.s('tt_progress',st.progress);
   LS.s('tt_pin',st.pin);LS.s('tt_autoplay',st.autoplay);
   LS.s('tt_delay',st.delay);LS.s('tt_inv',st.inv);LS.s('tt_invBase',st.invBase);
   LS.s('tt_sync_token',st.syncToken);LS.s('tt_sync_gist',st.syncGist);
@@ -1325,6 +1347,9 @@ async function renderKid(){
   updateHero(heroE);
 
   if(activeFilter==='all'){
+    const cwVideos=wm.filter(({v})=>{const p=st.progress[v.id];if(!p||!p.dur)return false;const pct=p.pos/p.dur;return pct>0.02&&pct<0.95;})
+      .sort((a,b)=>(st.progress[b.v.id]?.ts||0)-(st.progress[a.v.id]?.ts||0)).slice(0,10);
+    if(cwVideos.length)makeRow(area,'▶ Continue Watching',cwVideos,0);
     const favs=wm.filter(e=>e.v.favourite);
     if(favs.length)makeRow(area,'❤ Favourites',favs,0);
     st.playlists.forEach((pl,ri)=>{const items=wm.filter(e=>pl.videoIds.includes(e.v.id));if(items.length)makeRow(area,`📋 ${pl.name}`,items,ri*30);});
@@ -1398,6 +1423,8 @@ function makeRow(area,title,items,delay=0){
 
 function makeCard(v,idx,cached){
   const thumb=getThumb(v),cat=v.category||'other';
+  const prog=st.progress[v.id];
+  const progPct=prog&&prog.dur>0?Math.min(100,Math.round((prog.pos/prog.dur)*100)):0;
   const card=document.createElement('div');
   card.className=`video-card cat-${cat}`;
   card.innerHTML=`
@@ -1410,6 +1437,7 @@ function makeCard(v,idx,cached){
       <div class="card-play-ring">
         <div class="card-play-ring-inner"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
       </div>
+      ${progPct>1?`<div class="card-progress"><div class="card-progress-fill" style="width:${progPct}%"></div></div>`:''}
     </div>
     <div class="card-label">
       <div class="card-title">${v.title}</div>
@@ -1495,7 +1523,7 @@ document.getElementById('playlist-modal').addEventListener('click',e=>{if(e.targ
    PLAYER
 ══════════════════════════════════════════════ */
 let curIdx=null,apTimer=null,hlsI=null,vmPlayer=null,ytPlayer=null;
-let isPlaying=false,ctrlHideT=null,seekDrag=false,pollT=null;
+let isPlaying=false,ctrlHideT=null,seekDrag=false,pollT=null,pollCount=0,currentVideoId=null;
 
 const ctrlBack=document.getElementById('ctrl-back');
 const ctrlPlay=document.getElementById('ctrl-play');
@@ -1523,9 +1551,14 @@ function setPlaying(v){isPlaying=v;ctrlPlay.innerHTML=v?IPAUSE:IPLAY;}
 
 function onPlay(){setPlaying(true);pauseOvl.classList.remove('visible');showCtrl();startPoll();}
 function onPause(){setPlaying(false);pauseOvl.classList.add('visible');controls.classList.remove('hidden');clearTimeout(ctrlHideT);stopPoll();}
-function onEnd(){setPlaying(false);stopPoll();clearTimeout(ctrlHideT);controls.classList.remove('hidden');handleAutoNext();}
+function onEnd(){
+  setPlaying(false);stopPoll();clearTimeout(ctrlHideT);controls.classList.remove('hidden');
+  // Clear progress when video finishes
+  if(currentVideoId){delete st.progress[currentVideoId];LS.s('tt_progress',st.progress);}
+  handleAutoNext();
+}
 
-function startPoll(){stopPoll();pollT=setInterval(updateProg,500);}
+function startPoll(){stopPoll();pollCount=0;pollT=setInterval(updateProg,500);}
 function stopPoll(){clearInterval(pollT);pollT=null;}
 
 async function updateProg(){
@@ -1536,7 +1569,18 @@ async function updateProg(){
     else if(vmPlayer){cur=await vmPlayer.getCurrentTime();dur=await vmPlayer.getDuration();}
     else if(h5.style.display!=='none'){cur=h5.currentTime||0;dur=h5.duration||0;}
   }catch{}
-  if(dur>0){seekEl.value=Math.round((cur/dur)*1000);ctrlTime.textContent=`${fmt(cur)} / ${fmt(dur)}`;}
+  if(dur>0){
+    seekEl.value=Math.round((cur/dur)*1000);ctrlTime.textContent=`${fmt(cur)} / ${fmt(dur)}`;
+    // Save progress every 5s (10 poll cycles), skip very short or nearly-done videos
+    pollCount++;
+    if(pollCount%10===0 && currentVideoId && dur>30){
+      const pct=cur/dur;
+      if(pct>0.02&&pct<0.95){
+        st.progress[currentVideoId]={pos:Math.round(cur),dur:Math.round(dur),ts:Date.now()};
+        LS.s('tt_progress',st.progress);
+      }
+    }
+  }
 }
 
 seekEl.addEventListener('mousedown',()=>{seekDrag=true;stopPoll();});
@@ -1564,7 +1608,7 @@ function togglePlay(){
 }
 ctrlPlay.addEventListener('click',togglePlay);
 clickOvl.addEventListener('click',togglePlay);
-document.getElementById('pause-play-btn').addEventListener('click',togglePlay);
+document.getElementById('pause-overlay').addEventListener('click',togglePlay);
 ctrlFs.addEventListener('click',()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});else document.exitFullscreen().catch(()=>{});});
 ctrlBack.addEventListener('click',closePlayer);
 
@@ -1586,7 +1630,7 @@ function closePlayer(){
 
 function playVideo(idx){
   const v=st.videos[idx];if(!v)return;
-  curIdx=idx;
+  curIdx=idx;currentVideoId=v.id;
   clearAP();stopPoll();
   ytWrap.style.display='none';ytWrap.innerHTML='';
   if(ytPlayer){try{ytPlayer.destroy();}catch{}ytPlayer=null;}
@@ -1609,6 +1653,8 @@ function playVideo(idx){
       pauseSubEl.textContent=catMap[v.category]||'';
     }
   }
+  const pauseDescEl=document.getElementById('pause-desc');
+  if(pauseDescEl)pauseDescEl.textContent=v.description||'';
   go('player');
 
   const yt=ytId(v.url),vm=vmId(v.url);
@@ -1622,7 +1668,11 @@ function playVideo(idx){
         videoId:yt,width:'100%',height:'100%',
         playerVars:{autoplay:1,controls:0,modestbranding:1,rel:0,playsinline:1,disablekb:1,fs:0,iv_load_policy:3,enablejsapi:1,origin:location.origin},
         events:{
-          onReady:e=>e.target.playVideo(),
+          onReady:e=>{
+            e.target.playVideo();
+            const prog=st.progress[v.id];
+            if(prog&&prog.pos>10){setTimeout(()=>{try{e.target.seekTo(prog.pos,true);}catch{}},800);}
+          },
           onStateChange:e=>{
             if(e.data===YT.PlayerState.PLAYING)onPlay();
             else if(e.data===YT.PlayerState.PAUSED)onPause();
@@ -1646,6 +1696,8 @@ function playVideo(idx){
       vmPlayer=new Vimeo.Player(iframe);
       vmPlayer.on('play',onPlay);vmPlayer.on('pause',onPause);vmPlayer.on('ended',onEnd);
       vmPlayer.play().catch(()=>{});
+      const progVm=st.progress[v.id];
+      if(progVm&&progVm.pos>10){setTimeout(()=>{vmPlayer.setCurrentTime(progVm.pos).catch(()=>{});},1000);}
     };
     setTimeout(initVM,400);
   }else{
@@ -1653,10 +1705,12 @@ function playVideo(idx){
       if(!navigator.onLine&&!ok){offMsg.style.display='flex';return;}
       h5.style.display='block';
       h5.onplay=onPlay;h5.onpause=onPause;h5.onended=onEnd;
+      const progH5=st.progress[v.id];
+      const seekH5=()=>{if(progH5&&progH5.pos>10&&isFinite(h5.duration))h5.currentTime=progH5.pos;};
       if(isHLS(v.url)&&typeof Hls!=='undefined'&&Hls.isSupported()){
         hlsI=new Hls();hlsI.loadSource(v.url);hlsI.attachMedia(h5);
-        hlsI.on(Hls.Events.MANIFEST_PARSED,()=>h5.play().catch(()=>{}));
-      }else{h5.src=v.url;h5.play().catch(()=>{});}
+        hlsI.on(Hls.Events.MANIFEST_PARSED,()=>{h5.play().catch(()=>{});seekH5();});
+      }else{h5.src=v.url;h5.addEventListener('loadedmetadata',seekH5,{once:true});h5.play().catch(()=>{});}
     });
   }
   showCtrl();
@@ -1985,7 +2039,7 @@ document.getElementById('pin-chg-btn').addEventListener('click',()=>{
 });
 
 document.getElementById('export-btn').addEventListener('click',()=>{
-  const b=new Blob([JSON.stringify({videos:st.videos,playlists:st.playlists},null,2)],{type:'application/json'});
+  const b=new Blob([JSON.stringify({videos:st.videos,playlists:st.playlists,series:st.series},null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='tinytube-playlist.json';a.click();
 });
 document.getElementById('import-trigger').addEventListener('click',()=>document.getElementById('import-file').click());
@@ -1998,7 +2052,8 @@ document.getElementById('import-file').addEventListener('change',e=>{
       if(!Array.isArray(p.videos))throw 0;
       st.videos=migrate(p.videos);
       if(Array.isArray(p.playlists))st.playlists=p.playlists;
-      persist();renderAdminList();renderOrganize();
+      if(p.series&&typeof p.series==='object')st.series=p.series;
+      persist();renderAdminList();renderOrganize();renderSeriesAdmin();
       document.getElementById('imp-ok').textContent=`✅ Imported ${st.videos.length} videos`;
       setTimeout(()=>{document.getElementById('imp-ok').textContent='';},3000);
     }catch{document.getElementById('imp-err').textContent='❌ Invalid file.';}
@@ -2083,9 +2138,41 @@ document.getElementById('sync-pull-btn').addEventListener('click',async()=>{
   await syncPull();
 });
 
+/* ── QR sync ─────────────────────────────────────────────── */
+document.getElementById('qr-close-btn').addEventListener('click',()=>document.getElementById('qr-modal').classList.remove('open'));
+document.getElementById('qr-modal').addEventListener('click',e=>{if(e.target===document.getElementById('qr-modal'))document.getElementById('qr-modal').classList.remove('open');});
+document.getElementById('sync-qr-btn').addEventListener('click',()=>{
+  const gist=st.syncGist||document.getElementById('sync-gist').value.trim();
+  if(!gist){syncStatus('Sync first to get a Gist ID, then scan the QR on your second device.',false);return;}
+  const url=`https://its-timformation.github.io/tinytube/?gist=${encodeURIComponent(gist)}`;
+  document.getElementById('qr-url-text').textContent=url;
+  const container=document.getElementById('qr-canvas');container.innerHTML='';
+  const loadQR=()=>{
+    new window.QRCode(container,{text:url,width:200,height:200,colorDark:'#030d06',colorLight:'#e8f7ee',correctLevel:window.QRCode.CorrectLevel.M});
+  };
+  if(window.QRCode){loadQR();}
+  else{
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+    s.onload=loadQR;
+    document.head.appendChild(s);
+  }
+  document.getElementById('qr-modal').classList.add('open');
+});
+
 /* ══════════════════════════════════════════════
    INIT
 ══════════════════════════════════════════════ */
+// Pre-fill gist ID from ?gist= URL param (set by QR code scan)
+(()=>{
+  const urlGist=new URLSearchParams(location.search).get('gist');
+  if(urlGist&&!st.syncGist){
+    st.syncGist=urlGist;LS.s('tt_sync_gist',urlGist);
+    // Show a brief toast after admin opens
+    const orig=syncStatus;
+    setTimeout(()=>syncStatus('📱 Gist ID set from QR — enter your GitHub token to sync',true),600);
+  }
+})();
 renderKid();
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 window.addEventListener('online',()=>renderKid());
